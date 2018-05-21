@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_javascrape" default="compile.module.javascrape">
+  <dirname property="module.javascrape.basedir" file="${ant.file.module_javascrape}"/>
+  
+  <property name="module.jdk.home.javascrape" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.javascrape" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.javascrape" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.javascrape" value="-encoding UTF-8 -source 10 -target 10 ${compiler.args}"/>
+  
+  <property name="javascrape.output.dir" value="${module.javascrape.basedir}/out/production/JavaScrape"/>
+  <property name="javascrape.testoutput.dir" value="${module.javascrape.basedir}/out/test/JavaScrape"/>
+  
+  <path id="javascrape.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="javascrape.module.production.classpath">
+    <path refid="${module.jdk.classpath.javascrape}"/>
+    <pathelement location="${basedir}/../../Downloads/Programs/jsoup-1.11.3.jar"/>
+  </path>
+  
+  <path id="javascrape.runtime.production.module.classpath">
+    <pathelement location="${javascrape.output.dir}"/>
+    <pathelement location="${basedir}/../../Downloads/Programs/jsoup-1.11.3.jar"/>
+  </path>
+  
+  <path id="javascrape.module.classpath">
+    <path refid="${module.jdk.classpath.javascrape}"/>
+    <pathelement location="${javascrape.output.dir}"/>
+    <pathelement location="${basedir}/../../Downloads/Programs/jsoup-1.11.3.jar"/>
+  </path>
+  
+  <path id="javascrape.runtime.module.classpath">
+    <pathelement location="${javascrape.testoutput.dir}"/>
+    <pathelement location="${javascrape.output.dir}"/>
+    <pathelement location="${basedir}/../../Downloads/Programs/jsoup-1.11.3.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.javascrape">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.javascrape">
+    <patternset refid="excluded.from.module.javascrape"/>
+  </patternset>
+  
+  <path id="javascrape.module.sourcepath">
+    <dirset dir="${module.javascrape.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.javascrape" depends="compile.module.javascrape.production,compile.module.javascrape.tests" description="Compile module JavaScrape"/>
+  
+  <target name="compile.module.javascrape.production" depends="register.custom.compilers" description="Compile module JavaScrape; production classes">
+    <mkdir dir="${javascrape.output.dir}"/>
+    <javac2 destdir="${javascrape.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.javascrape}/javac">
+      <compilerarg line="${compiler.args.javascrape}"/>
+      <bootclasspath refid="javascrape.module.bootclasspath"/>
+      <classpath refid="javascrape.module.production.classpath"/>
+      <src refid="javascrape.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.javascrape"/>
+    </javac2>
+    
+    <copy todir="${javascrape.output.dir}">
+      <fileset dir="${module.javascrape.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.javascrape.tests" depends="register.custom.compilers,compile.module.javascrape.production" description="compile module JavaScrape; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.javascrape" description="cleanup module">
+    <delete dir="${javascrape.output.dir}"/>
+    <delete dir="${javascrape.testoutput.dir}"/>
+  </target>
+</project>
